@@ -45,14 +45,9 @@ ________________________________________________________________________________
     Open gnome-terminal and navigate to folder with downloaded program files
     Enter the following commands into gnome-terminal:
         chmod +x csv_insp.py
-        chmod +x csv_insp.sh
         chmod +x csv_insp_start.desktop
         
 #### Step 3: Edit files to reflect your directory structure
-- Open csv_insp.sh into text editor and change line 2 file path to match your
-file structure
-    - Save and exit file
-    
 - Open csv_insp_start.desktop into text editor and change lines 5, 6 and 7 to 
 match your file structure
     - Save and exit file

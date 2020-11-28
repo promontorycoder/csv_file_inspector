@@ -2,7 +2,7 @@
 Type=Application
 Name=CSV File Inspector
 Categories=GTK;GNOME;UtilitY;
-Exec=gnome-terminal -- /home/Path/To/Folder/File/csv_insp.sh
+Exec=/home/Path/To/Folder/File/csv_insp.py
 Icon=/home/Path/To/Folder/File/csv_insp.png
 Path=/home/Path/To/Folder/File/csv_insp
 Terminal=false
