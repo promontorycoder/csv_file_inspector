@@ -66,5 +66,5 @@ Step 5: Copy .desktop file to /usr/share/applications
         sudo cp csv_insp_start.desktop /usr/share/applications
 
 <div align="center">
-    <img src="Screenshot01.png" width="400px"</img>
+    <img src="/Screenshot01.png" width="400px"</img>
 </div>
