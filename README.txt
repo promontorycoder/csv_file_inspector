@@ -65,4 +65,4 @@ Step 5: Copy .desktop file to /usr/share/applications
     Open gnome-terminal and enter the following command:
         sudo cp csv_insp_start.desktop /usr/share/applications
 
-![Screenshot01.png](https://github.com/promontorycoder/csv_file_inspector/main/Screenshot01.png)
+![Screenshot01](https://user-images.githubusercontent.com/74512341/100490204-a3494a00-30e7-11eb-93b4-7026406a6174.png)
