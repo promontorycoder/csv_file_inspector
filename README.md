@@ -49,13 +49,13 @@ Step 2: Make program files executable
         chmod +x csv_insp_start.desktop
         
 Step 3: Edit files to reflect your directory structure
-    Open csv_insp.sh into text editor and change line 2 file path to match your
-    file structure
-    Save and exit file
+    - Open csv_insp.sh into text editor and change line 2 file path to match 
+    your file structure
+    - Save and exit file
     
-    Open csv_insp_start.desktop into text editor and change lines 5, 6 and 7 to 
-    match your file structure
-    Save and exit file
+    - Open csv_insp_start.desktop into text editor and change lines 5, 6 and 7 
+    to match your file structure
+    - Save and exit file
     
 Step 4: Install tkinter if you do not already have it installed.
     Open gnome-terminal and execute the following command:
