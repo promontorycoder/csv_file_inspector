@@ -65,6 +65,4 @@ Step 5: Copy .desktop file to /usr/share/applications
     Open gnome-terminal and enter the following command:
         sudo cp csv_insp_start.desktop /usr/share/applications
 
-<div align="center">
-    <img src="/Screenshot01.png" width="400px"</img>
-</div>
+![Screenshot](Screenshot01.png)
