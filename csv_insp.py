@@ -11,83 +11,70 @@ root.configure(bg='gray7')
 root.resizable(1,1)
 root.title("CSV File Inspector")
 
-global filename
-
-# filename = 'EntireStateVoters.csv'
-
-def get_file_name():
+# Function to print filepath and name to tkinter text widget for correctness
+def get_file_name(filepath, filename):
 
     try:
-
-        if E1.get() == "":
-            T1.insert(END, "\nPlease Enter a File Name ...")
+        # Prompt for filename if entry box is empty
+        if filename == "":
+            text_output_window.insert(END, "\nPlease Enter a File Name ...")
             
-        else:
-            global filename
+        else: # combine filepath and filename and send to tkinter text widget
+            msg = filepath + filename
+            text_output_window.insert(END, '\n' + msg + '\n')
+    # Handle exceptions and send errors to tkinter text widget       
+    except Exception as err:
+        msg = '\nPlease Enter A Valid File Path and Name ...'
+        text_output_window.insert(END, msg )
+        text_output_window.insert(END, err)
         
-            getfn = E1.get()
-            getfp = E2.get()
-            gfile = getfp + getfn
-            T1.insert(END, '\n' + gfile + '\n')
-            
-            filename = gfile
-        
-    except Exception:
-        T1.insert(END, '\nPlease Enter A Valid File Path and Name ...')
-        
-        
-   
-def get_encoding():
+# Function to determine correct file encoding   
+def get_encoding(filepath, filename):
+    # Combine file and path for file
+    csv_doc = str(filepath + filename)
 
-    global filename
-    global fencode
-    
-    try:    
-        with open(filename, 'r', errors='ignore') as file:
+    try:  # Open file in read mode and retrieve file encoding  
+        with open(csv_doc, 'r', errors='ignore') as file:
             fencode = file.encoding
-            T1.insert(END, fencode + '\n')
+            text_output_window.insert(END, fencode + '\n')
+            
+            return(fencode)
     
     except Exception:
-        T1.insert(END, '\nPlease Enter A Valid File Path and Name ...')
+        msg = '\nPlease Enter A Valid File Path and Name ...'
+        text_output_window.insert(END, msg)
         
         
-def print_headers():
+def get_file_headers(filepath, filename):
+    # Create variable for filepath and filename combined
+    file = filepath + filename
+    fencode = get_encoding(filepath, filename) # Get encoding
 
-    global filename
-    global fencode
-    
     try:
-        with open(filename, 'r', encoding=fencode, errors='ignore', 
+        with open(file, 'r', encoding=fencode, errors='ignore', 
             newline='') as f:
             
             reader = csv.reader(f)
-            header_row = next(reader)
-            
-            header_file=open(filename + '_headers.txt', 'w')
+            header_row = next(reader) # Read headers
             
             count = 0
             
             for row in header_row:
                 
-                header_file.write(row)
-                header_file.write('\n')
-                
                 header_string = ("Header Index " + str(count) + " " + 
                     row + '\n')
-                T1.insert(END, header_string)
+                text_output_window.insert(END, header_string)
                 
                 count += 1
                 
     except Exception:
-        T1.insert(END, '\nPlease Enter A Valid File Path and Name ...')   
+        msg = '\nPlease Enter A Valid File Path and Name ...'
+        text_output_window.insert(END, msg)   
                 
 
-def text_print():
+def text_print(filepath, filename):
 
-    
-    fp = E5.get()
-    fn = E6.get()
-    new_file = (fp + fn + '.txt')
+    new_file = (filepath + filename + '.txt')
      
     date = time.strftime('%B %d, %Y')
     clock_time = time.strftime('%I:%M %p')
@@ -100,84 +87,80 @@ def text_print():
     phrase2 = " at "
     
     doc_write = (phrase1 + date + phrase2 + clock_time + '\n' + 
-        T1.get(1.0, END))
+        text_output_window.get(1.0, END))
     
     with open(new_file, 'w') as file_object:
         file_object.write(doc_write)
 
-def search_csv():
+def search_csv(filepath, filename, search_criteria):
     
-    global filename
-    global fencode
-    global included_cols
-    
-    search_get = E3.get()
-    search_term = search_get.upper()
+    file = filepath + filename
+    fencode = get_encoding(filepath, filename)
+    search_term = search_criteria.upper()
     
     try:
-        with open(filename, 'r', encoding=fencode, errors='ignore',
+        with open(file, 'r', encoding=fencode, errors='ignore',
             newline='') as f:
             
             reader = csv.reader(f)
             
             included_cols = []
             
-            columns = [int(x) for x in E4.get().split()]
+            columns = [int(x) for x in entry_columns.get().split()]
             for column in columns:
                 included_cols.append(column)
             
             for row in reader:
                 if search_term in row:
                     content = list(row[i] for i in included_cols)
-                    T1.insert(END, content)
-                    T1.insert(END, '\n')
+                    text_output_window.insert(END, content)
+                    text_output_window.insert(END, '\n')
            
                 
     except Exception as err:
-        T1.insert(END, '\n' + str(err))
-        T1.insert(END, '\nSearch Criteria Not Found ...')
+        text_output_window.insert(END, '\n' + str(err))
+        text_output_window.insert(END, '\nSearch Criteria Not Found ...')
 
 
-def whole_column():
+def whole_column(filepath, filename):
     
-    global filename
-    global fencode
-    global included_cols
-    
+    file = filepath + filename
+    fencode = get_encoding(filepath, filename)
+        
     try:
-        with open(filename, 'r', encoding=fencode, errors='ignore',
+        with open(file, 'r', encoding=fencode, errors='ignore',
             newline='') as f:
             
             reader = csv.reader(f)
             
             included_cols = []
             
-            columns = [int(x) for x in E4.get().split()]
+            columns = [int(x) for x in entry_columns.get().split()]
             for column in columns:
                 included_cols.append(column)
             
             for row in reader:
                 content = list(row[i] for i in included_cols)
-                T1.insert(END, content)
-                T1.insert(END, '\n')
+                text_output_window.insert(END, content)
+                text_output_window.insert(END, '\n')
            
                 
     except Exception as err:
-        T1.insert(END, '\n' + str(err))
-        T1.insert(END, '\nSearch Criteria Not Found ...')
-        T1.insert(END, '\nPlease enter column to be returned.')
+        text_output_window.insert(END, '\n' + str(err))
+        text_output_window.insert(END, '\nSearch Criteria Not Found ...')
+        text_output_window.insert(END, '\nPlease enter column to be returned.')
     
 
-def read_file():
+def read_file(filepath, filename):
     
-    global filename
-    global fencode
+    file = filepath + filename
+    fencode = get_encoding(filepath, filename)
     
     fields = []
     rows = []
     
     try:
-        with open(filename, 'r', encoding=fencode, errors='ignore', 
+        with open(file, 'r', encoding=fencode, errors='ignore', 
             newline='') as f:
         
             reader = csv.reader(f)
@@ -187,35 +170,35 @@ def read_file():
                 rows.append(row)
             
             rows_num = ("\nTotal No. of rows: %d"%(reader.line_num))    
-            T1.insert(END, rows_num)
-            T1.insert(END, '\n')
+            text_output_window.insert(END, rows_num)
+            text_output_window.insert(END, '\n')
         
         op_fields = ("Field names are: " + ', '.join(field for field in fields))
-        T1.insert(END, op_fields)
-        T1.insert(END, '\n')
+        text_output_window.insert(END, op_fields)
+        text_output_window.insert(END, '\n')
         
         for row in rows:
             for col in row:
                 op_print = ("%10s"%col)
-                # T1.insert(END, '\n'
-                T1.insert(END, op_print)
-            T1.insert(END, '\n')
+                # text_output_window.insert(END, '\n'
+                text_output_window.insert(END, op_print)
+            text_output_window.insert(END, '\n')
                 
     except Exception as err:
-        T1.insert(END, '\n' + str(err))
-        T1.insert(END, '\nUnable to process file ...')
+        text_output_window.insert(END, '\n' + str(err))
+        text_output_window.insert(END, '\nUnable to process file ...')
 
 
-def read_part():
+def read_part(filepath, filename):
     
-    global filename
-    global fencode
+    file = filepath + filename
+    fencode = get_encoding(filepath, filename)
     
     fields = []
     rows = []
     
     try:
-        with open(filename, 'r', encoding=fencode, errors='ignore', 
+        with open(file, 'r', encoding=fencode, errors='ignore', 
             newline='') as f:
         
             reader = csv.reader(f)
@@ -225,44 +208,44 @@ def read_part():
                 rows.append(row)
             
             rows_num = ("\nTotal No. of rows: %d"%(reader.line_num))    
-            T1.insert(END, rows_num)
-            T1.insert(END, '\n')
+            text_output_window.insert(END, rows_num)
+            text_output_window.insert(END, '\n')
         
         op_fields = ("Field names are: " + ', '.join(field for field in fields))
-        T1.insert(END, op_fields)
-        T1.insert(END, '\n')
-        T1.insert(END, 'First 5 rows are:\n')
+        text_output_window.insert(END, op_fields)
+        text_output_window.insert(END, '\n')
+        text_output_window.insert(END, 'First 5 rows are:\n')
         
         for row in rows[:5]:
             for col in row:
                 op_print = ("%10s"%col)
-                # T1.insert(END, '\n'
-                T1.insert(END, op_print)
-            T1.insert(END, '\n')
+                # text_output_window.insert(END, '\n'
+                text_output_window.insert(END, op_print)
+            text_output_window.insert(END, '\n')
                 
     except Exception as err:
-        T1.insert(END, '\n' + str(err))
-        T1.insert(END, '\nUnable to process file ...')
+        text_output_window.insert(END, '\n' + str(err))
+        text_output_window.insert(END, '\nUnable to process file ...')
 
 
 def clear_output():
-    T1.delete(1.0, END)
+    text_output_window.delete(1.0, END)
     
 
-def clear_filep():
-    E2.delete(0, 'end')
+def clear_filepath():
+    entry_filepath.delete(0, 'end')
 
 
-def clear_filen():
-    E1.delete(0, 'end')
+def clear_filename():
+    entry_filename.delete(0, 'end')
 
 
 def clear_search():
-    E3.delete(0, 'end')
+    entry_search_criteria.delete(0, 'end')
 
 
 def clear_columns():
-    E4.delete(0, 'end')
+    entry_columns.delete(0, 'end')
 
 
 def Exit():
@@ -270,126 +253,272 @@ def Exit():
 
 
 # Create tkinter Labels
-L1 = Label(root, text = "Enter Filename: ", font = 'arial 10', 
-    bg='gray7', fg='lime green')
-L1.place(x=50, y=55)
+label_enter_filename = Label(root, 
+    text = "Enter Filename: ", 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
+    
+label_output = Label(root, 
+    text = "Output: ", 
+    font = 'arial 14 bold', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L2 = Label(root, text = "Output: ", font = 'arial 14 bold', 
-    bg='gray7', fg='lime green')
-L2.place(x=50, y=120)
+label_enter_filepath = Label(root, 
+    text = "Enter File Path: ", 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L3 = Label(root, text = "Enter File Path: ", font = 'arial 10', 
-    bg='gray7', fg='lime green')
-L3.place(x=50, y=5)
+label_enter_search_criteria = Label(root, 
+    text = "Enter Search Criteria:", 
+    font = 'arial 12', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L4 = Label(root, text = "Enter Search Criteria:", 
-    font = 'arial 12', bg='gray7', fg='lime green')
-L4.place(x=400, y=55)
+label_columns = Label(root, 
+    text = "Enter columns to be RETURNED, separated by spaces: ", 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L5 = Label(root, text = "Enter columns to be RETURNED, separated by spaces: ", 
-    font = 'arial 10', bg='gray7', fg='lime green')
-L5.place(x=400, y=5)
+label_output_filepath = Label(root, 
+    text = "Enter file path for printing output:", 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L6 = Label(root, text = "Enter file path for printing output:", 
-    font = 'arial 10', bg='gray7', fg='lime green')
-L6.place(x=350, y=760)
+label_output_filename = Label(root, 
+    text = "Enter file name for printing output:", 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-L7 = Label(root, text = "Enter file name for printing output:", 
-    font = 'arial 10', bg='gray7', fg='lime green')
-L7.place(x=350, y=800)
+label_enter_filename.place(x=50, y=55)
+label_output.place(x=50, y=120)
+label_enter_filepath.place(x=50, y=5)
+label_enter_search_criteria.place(x=400, y=55)
+label_columns.place(x=400, y=5)
+label_output_filepath.place(x=350, y=760)
+label_output_filename.place(x=350, y=800)
 
 
 # Create tkinter text output widget
-T1 = Text(root, height=35, width=85, borderwidth=1, relief='ridge', bg='gray7', 
-    fg='lime green')
-T1.place(x=50, y=150)
+text_output_window = Text(root, 
+    height=35, 
+    width=85, 
+    borderwidth=1, 
+    relief='ridge', 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+text_output_window.place(x=50, y=150)
 
 # Create Scrollbar for text widget
-S1 = Scrollbar(root)
-S1.place(x=750, y=400)
-
+scrollbar = Scrollbar(root)
+scrollbar.place(x=750, y=400)
 
 # Configure commands for scrollbar and tie to text widget
-T1.config(yscrollcommand=S1.set)
-S1.config(command=T1.yview, bg='gray7', activebackground='lime green', 
-    highlightcolor='lime green', width=15)
+text_output_window.config(yscrollcommand=scrollbar.set)
+scrollbar.config(command=text_output_window.yview, 
+    bg='gray7', 
+    activebackground='lime green', 
+    highlightcolor='lime green', 
+    width=15
+    )
+
 
 # Create Entry Boxes
-# Entry box for filename 
-E1 = Entry(root, font = 'arial 10', width=25, bg='gray7', fg='lime green')
-E1.place(x=50, y=80)
-# Entry box for file path
-E2 = Entry(root, font = 'arial 10', width=25, bg='gray7', fg='lime green')
-E2.place(x=50, y=30)
-# Entry box for search criteria
-E3 = Entry(root, font = 'arial 10', width=50, bg='gray7', fg='lime green')
-E3.place(x=400, y=80)
-# Entry box for columns to be searched
-E4 = Entry(root, font = 'arial 10', width=50, bg='gray7', fg='lime green')
-E4.place(x=400, y=30)
-# Entry box for output file path
-E5 = Entry(root, font = 'arial 10', width=40, bg='gray7', fg='lime green')
-E5.place(x=350, y=780)
-# Entry box for output file name
-E6 = Entry(root, font = 'arial 10', width=40, bg='gray7', fg='lime green')
-E6.place(x=350, y=820)
+entry_filepath = Entry(root, 
+    font = 'arial 10', 
+    width=25, 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+entry_filename = Entry(root, 
+    font = 'arial 10', 
+    width=25, 
+    bg='gray7', 
+    fg='lime green'
+    )
+    
+entry_search_criteria = Entry(root, 
+    font = 'arial 10', 
+    width=50, 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+entry_columns = Entry(root, 
+    font = 'arial 10', 
+    width=50, 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+entry_output_filepath = Entry(root, 
+    font = 'arial 10', 
+    width=40, 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+entry_output_filename = Entry(root, 
+    font = 'arial 10', 
+    width=40, 
+    bg='gray7', 
+    fg='lime green'
+    )
+
+# Place entry boxes in tkinter window frame
+entry_filename.place(x=50, y=80)
+entry_filepath.place(x=50, y=30)
+entry_search_criteria.place(x=400, y=80)
+entry_columns.place(x=400, y=30)
+entry_output_filepath.place(x=350, y=780)
+entry_output_filename.place(x=350, y=820)
 
 
 # Create Buttons
-B1 = Button(root, font = 'arial 10', text = 'Get File', 
-    command = get_file_name, bg='gray7', fg='lime green')
-B1.place(x=50, y=760)
+btn_get_file = Button(root, 
+    command = lambda: get_file_name(entry_filepath.get(), entry_filename.get()),
+    text = 'Get File',
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B2 = Button(root, font = 'arial 10', text = 'Get File Encoding', 
-    command = get_encoding, bg='gray7', fg='lime green')
-B2.place(x=50, y=800)
+btn_get_encoding = Button(root, 
+    command = lambda: get_encoding(entry_filepath.get(), entry_filename.get()),
+    text = 'Get File Encoding', 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B3 = Button(root, font = 'arial 10', text = 'Get File Headers', 
-    command = print_headers, bg='gray7', fg='lime green')
-B3.place(x=50, y=840)
+btn_get_file_headers = Button(root, 
+    command = lambda: get_file_headers(entry_filepath.get(), entry_filename.get()), 
+    text = 'Get File Headers', 
+    font = 'arial 10', 
+    bg='gray7', 
+    fg='lime green'
+    )
+    
+btn_clear_filepath = Button(root, 
+    command = clear_filepath, 
+    text = 'Clear File Path', 
+    font = 'arial 8', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B4 = Button(root, font = 'arial 8', text = 'Clear File Path', 
-    command = clear_filep, bg='gray7', fg='lime green')
-B4.place(x=260, y=27)
+btn_clear_filename = Button(root, 
+    command = clear_filename, 
+    text = 'Clear File Name', 
+    font = 'arial 8', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B9 = Button(root, font = 'arial 8', text = 'Clear File Name', 
-    command = clear_filen, bg='gray7', fg='lime green')
-B9.place(x=260, y=77)
+btn_clear_output = Button(root, 
+    command = clear_output, 
+    text = 'Clear Output', 
+    font = 'arial 8', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B10 = Button(root, font = 'arial 8', text = 'Clear Output', 
-    command = clear_output, bg='gray7', fg='lime green')
-B10.place(x=150, y=117)
+btn_clear_search = Button(root, 
+    command = clear_search, 
+    text = 'Clear Search', 
+    font = 'arial 8', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B11 = Button(root, font = 'arial 8', text = 'Clear Search', 
-    command = clear_search, bg='gray7', fg='lime green')
-B11.place(x=600, y=117)
+btn_search = Button(root, 
+    command = lambda: search_csv(entry_filepath.get(), entry_filename.get(), 
+        entry_search_criteria.get()), 
+    text = 'SEARCH', 
+    font = 'arial 10', 
+    bg='lime green', 
+    fg='gray7'
+    )
 
-B5 = Button(root, font = 'arial 10', text = 'SEARCH', 
-    command = search_csv, bg='lime green', fg='gray7')
-B5.place(x=400, y=117)
+btn_exit = Button(root, 
+    command = Exit, 
+    text = 'EXIT', 
+    font = 'arial 10 bold', 
+    bg = 'OrangeRed', 
+    width=6, 
+    padx=2, 
+    pady=1
+    )
 
-B7 = Button(root, font = 'arial 10 bold', text = 'EXIT', width=6, 
-    command = Exit, bg = 'OrangeRed', padx=2, pady=1)
-B7.place(x=725, y=850)
+btn_print = Button(root, 
+    command = lambda: text_print(entry_output_filepath.get(), entry_output_filename.get()), 
+    text = 'Print', 
+    font = 'arial 10', 
+    bg='royal blue', 
+    fg='lime green'
+    )
 
-B8 = Button(root, font = 'arial 10', text = 'Print', 
-    command = text_print, bg='royal blue', fg='lime green')
-B8.place(x=650, y=795)
+btn_clear_columns = Button(root, 
+    command = clear_columns, 
+    text = 'Clear Columns', 
+    font = 'arial 8', 
+    bg='gray7', 
+    fg='lime green'
+    )
 
-B12 = Button(root, font = 'arial 8', text = 'Clear Columns', 
-    command = clear_columns, bg='gray7', fg='lime green')
-B12.place(x=600, y=52)
+btn_read_file = Button(root, 
+    command = lambda: read_file(entry_filepath.get(), entry_filename.get()), 
+    text = 'Read File', 
+    font = 'arial 10', 
+    bg='lime green', 
+    fg='gray7'
+    )
 
-B13 = Button(root, font = 'arial 10', text = 'Read File', 
-    command = read_file, bg='lime green', fg='gray7')
-B13.place(x=220, y=760)
+btn_read_5_rows = Button(root, 
+    command = lambda: read_part(entry_filepath.get(), entry_filename.get()), 
+    text = 'Read 5 Rows', 
+    font = 'arial 10', 
+    bg='lime green', 
+    fg='gray7'
+    )
 
-B14 = Button(root, font = 'arial 10', text = 'Read 5 Rows', 
-    command = read_part, bg='lime green', fg='gray7')
-B14.place(x=220, y=800)
+btn_read_columns = Button(root, 
+    command = lambda: whole_column(entry_filepath.get(), entry_filename.get()), 
+    text = 'Read Columns', 
+    font = 'arial 10', 
+    bg='lime green', 
+    fg='gray7'
+    )
 
-B15 = Button(root, font = 'arial 10', text = 'Read Columns', 
-    command = whole_column, bg='lime green', fg='gray7')
-B15.place(x=220, y=840)
+# Place buttons on the tkinter window frame
+btn_get_file.place(x=50, y=760)
+btn_get_encoding.place(x=50, y=800)
+btn_get_file_headers.place(x=50, y=840)
+btn_clear_filepath.place(x=260, y=27)
+btn_clear_filename.place(x=260, y=77)
+btn_clear_output.place(x=150, y=117)
+btn_clear_search.place(x=600, y=117)
+btn_search.place(x=400, y=117)
+btn_exit.place(x=725, y=850)
+btn_print.place(x=650, y=795)
+btn_clear_columns.place(x=600, y=52)
+btn_read_file.place(x=220, y=760)
+btn_read_5_rows.place(x=220, y=800)
+btn_read_columns.place(x=220, y=840)
 
 root.mainloop()
